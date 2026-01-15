@@ -10,10 +10,7 @@ import {
   CheckCircle,
   Truck,
   Settings,
-  Clock,
 } from 'lucide-react';
-import { useState, useEffect } from 'react';
-
 const navItems = [
   { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { path: '/part-master', label: 'Part Master', icon: Package },
@@ -28,14 +25,6 @@ const navItems = [
 
 export function Sidebar() {
   const location = useLocation();
-  const [currentTime, setCurrentTime] = useState(new Date());
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
 
   return (
     <aside className="mes-sidebar h-screen flex flex-col">
@@ -81,15 +70,6 @@ export function Sidebar() {
         })}
       </nav>
 
-      {/* Footer Clock */}
-      <div className="p-4 border-t border-sidebar-border">
-        <div className="flex items-center gap-2 text-sidebar-foreground/60">
-          <Clock className="w-4 h-4" />
-          <span className="font-mono text-sm">
-            {currentTime.toLocaleTimeString('en-US', { hour12: false })}
-          </span>
-        </div>
-      </div>
     </aside>
   );
 }
