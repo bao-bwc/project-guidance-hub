@@ -21,7 +21,7 @@ const navItems = [
   { path: '/testing', label: 'Testing', icon: TestTube },
   { path: '/troubleshooting', label: 'Troubleshooting', icon: AlertTriangle },
   { path: '/quality-control', label: 'Quality Control', icon: CheckCircle },
-  { path: '/warehouse', label: 'Warehouse', icon: Warehouse },
+  { path: '/stockroom', label: 'Stockroom', icon: Warehouse },
   { path: '/shipping', label: 'Shipping', icon: Truck },
   { path: '/administration', label: 'Administration', icon: Settings },
 ];
