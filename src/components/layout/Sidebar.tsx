@@ -12,6 +12,7 @@ import {
   Truck,
   Settings,
 } from 'lucide-react';
+import brandywineLogo from '@/assets/brandywine-logo.png';
 
 const navItems = [
   { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -34,13 +35,11 @@ export function Sidebar() {
       {/* Logo */}
       <div className="p-6 border-b border-sidebar-border">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-sidebar-primary flex items-center justify-center">
-            <span className="text-sidebar-primary-foreground font-bold text-lg">M</span>
-          </div>
-          <div>
-            <h1 className="text-lg font-semibold text-sidebar-foreground">MES</h1>
-            <p className="text-xs text-sidebar-foreground/60">Workspace</p>
-          </div>
+          <img 
+            src={brandywineLogo} 
+            alt="Brandywine Communications Logo" 
+            className="h-10 w-auto object-contain"
+          />
         </div>
       </div>
 
