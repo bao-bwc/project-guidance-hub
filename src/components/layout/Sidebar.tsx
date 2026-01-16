@@ -17,11 +17,11 @@ const navItems = [
   { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { path: '/part-master', label: 'Part Master', icon: Package },
   { path: '/work-order', label: 'Work Order', icon: ClipboardList },
+  { path: '/stockroom', label: 'Stockroom', icon: Warehouse },
   { path: '/assembly', label: 'Assembly', icon: Wrench },
   { path: '/testing', label: 'Testing', icon: TestTube },
   { path: '/troubleshooting', label: 'Troubleshooting', icon: AlertTriangle },
   { path: '/quality-control', label: 'Quality Control', icon: CheckCircle },
-  { path: '/stockroom', label: 'Stockroom', icon: Warehouse },
   { path: '/shipping', label: 'Shipping', icon: Truck },
   { path: '/administration', label: 'Administration', icon: Settings },
 ];
