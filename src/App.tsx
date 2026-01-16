@@ -16,6 +16,7 @@ import Troubleshooting from "./pages/Troubleshooting";
 import QualityControl from "./pages/QualityControl";
 import Shipping from "./pages/Shipping";
 import Administration from "./pages/Administration";
+import Stockroom from "./pages/Stockroom";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,6 +38,7 @@ const App = () => (
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/part-master" element={<PartMaster />} />
               <Route path="/work-order" element={<WorkOrder />} />
+              <Route path="/stockroom" element={<Stockroom />} />
               <Route path="/assembly" element={<Assembly />} />
               <Route path="/testing" element={<Testing />} />
               <Route path="/troubleshooting" element={<Troubleshooting />} />
