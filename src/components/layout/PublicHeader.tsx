@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LogIn, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import brandywineLogo from '@/assets/brandywine-logo.png';
 
 export function PublicHeader() {
   const navigate = useNavigate();
@@ -36,13 +37,11 @@ export function PublicHeader() {
     <header className="mes-header flex items-center justify-between px-6">
       {/* Left: Logo & Branding */}
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-          <span className="text-primary-foreground font-bold text-lg">M</span>
-        </div>
-        <div>
-          <h1 className="text-lg font-semibold text-foreground">MES</h1>
-          <p className="text-xs text-muted-foreground">Manufacturing Execution System</p>
-        </div>
+        <img 
+          src={brandywineLogo} 
+          alt="Brandywine Communications Logo" 
+          className="h-10 w-auto object-contain"
+        />
       </div>
 
       {/* Center: Digital Clock */}
