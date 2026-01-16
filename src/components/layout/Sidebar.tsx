@@ -8,9 +8,11 @@ import {
   TestTube,
   AlertTriangle,
   CheckCircle,
+  Warehouse,
   Truck,
   Settings,
 } from 'lucide-react';
+
 const navItems = [
   { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { path: '/part-master', label: 'Part Master', icon: Package },
@@ -19,6 +21,7 @@ const navItems = [
   { path: '/testing', label: 'Testing', icon: TestTube },
   { path: '/troubleshooting', label: 'Troubleshooting', icon: AlertTriangle },
   { path: '/quality-control', label: 'Quality Control', icon: CheckCircle },
+  { path: '/warehouse', label: 'Warehouse', icon: Warehouse },
   { path: '/shipping', label: 'Shipping', icon: Truck },
   { path: '/administration', label: 'Administration', icon: Settings },
 ];
