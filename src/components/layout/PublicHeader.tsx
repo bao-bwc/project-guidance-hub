@@ -48,7 +48,10 @@ export function PublicHeader() {
       <div className="flex flex-col items-center">
         <div className="flex items-center gap-2">
           <Clock className="w-4 h-4 text-muted-foreground" />
-          <span className="font-mono text-2xl font-semibold tracking-wider text-foreground">
+          <span 
+            className="text-2xl tracking-wider text-foreground"
+            style={{ fontFamily: "'DSEG14 Classic', monospace" }}
+          >
             {formatTime(currentTime)}
           </span>
         </div>
