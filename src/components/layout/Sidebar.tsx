@@ -80,7 +80,7 @@ export function Sidebar() {
           })}
         </div>
 
-        <Separator className="my-4" />
+        <Separator className="my-4 mx-4 w-auto bg-sidebar-foreground/80" />
 
         <div className="space-y-1">
           {adminItems.map((item) => {
