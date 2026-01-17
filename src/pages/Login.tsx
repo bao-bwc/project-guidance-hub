@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
+import brandywineLogo from '@/assets/brandywine-logo.png';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -56,8 +57,12 @@ export default function Login() {
           <div className="mes-card">
             {/* Logo */}
             <div className="text-center mb-8">
-              <div className="w-16 h-16 rounded-xl bg-primary mx-auto flex items-center justify-center mb-4">
-                <span className="text-primary-foreground font-bold text-2xl">M</span>
+              <div className="w-16 h-16 mx-auto flex items-center justify-center mb-4">
+                <img 
+                  src={brandywineLogo} 
+                  alt="Brandywine Communications Logo" 
+                  className="h-16 w-auto object-contain"
+                />
               </div>
               <h1 className="text-2xl font-semibold text-foreground">Welcome Back</h1>
               <p className="text-muted-foreground mt-1">Sign in to access your workspace</p>
