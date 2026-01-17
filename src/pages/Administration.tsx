@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Settings, Users, Shield, FileText, Plus, Search, MoreVertical } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-
+import { AddUserDialog } from '@/components/admin/AddUserDialog';
 const container = {
   hidden: { opacity: 0 },
   show: {
@@ -36,6 +36,7 @@ const auditLogs = [
 
 export default function Administration() {
   const [activeTab, setActiveTab] = useState<'users' | 'audit'>('users');
+  const [addUserOpen, setAddUserOpen] = useState(false);
 
   return (
     <motion.div
@@ -81,11 +82,12 @@ export default function Administration() {
                   className="pl-10"
                 />
               </div>
-              <Button className="gap-2">
+              <Button className="gap-2" onClick={() => setAddUserOpen(true)}>
                 <Plus className="w-4 h-4" />
                 Add User
               </Button>
             </div>
+            <AddUserDialog open={addUserOpen} onOpenChange={setAddUserOpen} />
           </motion.div>
 
           {/* Users Table */}

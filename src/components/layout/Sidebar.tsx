@@ -34,12 +34,15 @@ export function Sidebar() {
     <aside className="mes-sidebar h-screen flex flex-col">
       {/* Logo */}
       <div className="p-6 border-b border-sidebar-border">
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col gap-1">
           <img 
             src={brandywineLogo} 
             alt="Brandywine Communications Logo" 
             className="h-10 w-auto object-contain"
           />
+          <span className="text-[10px] text-sidebar-foreground/60 font-medium tracking-tight">
+            pc/Link Real-Time Production Extension
+          </span>
         </div>
       </div>
 
