@@ -42,7 +42,7 @@ export function PublicHeader() {
           alt="Brandywine Communications Logo" 
           className="h-10 w-auto object-contain"
         />
-        <span className="text-[10px] text-muted-foreground font-medium tracking-tight">
+        <span className="text-[10px] text-destructive font-medium tracking-tight">
           pc/Link Real-Time Production Extension
         </span>
       </div>
