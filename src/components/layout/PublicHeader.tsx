@@ -36,12 +36,15 @@ export function PublicHeader() {
   return (
     <header className="mes-header flex items-center justify-between px-6">
       {/* Left: Logo & Branding */}
-      <div className="flex items-center gap-3">
+      <div className="flex flex-col gap-1">
         <img 
           src={brandywineLogo} 
           alt="Brandywine Communications Logo" 
           className="h-10 w-auto object-contain"
         />
+        <span className="text-[10px] text-muted-foreground font-medium tracking-tight">
+          pc/Link Real-Time Production Extension
+        </span>
       </div>
 
       {/* Center: Digital Clock */}
