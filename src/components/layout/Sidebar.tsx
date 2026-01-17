@@ -12,9 +12,10 @@ import {
   Truck,
   Settings,
 } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 import brandywineLogo from '@/assets/brandywine-logo.png';
 
-const navItems = [
+const productionItems = [
   { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { path: '/part-master', label: 'Part Master', icon: Package },
   { path: '/work-order', label: 'Work Order', icon: ClipboardList },
@@ -24,6 +25,9 @@ const navItems = [
   { path: '/troubleshooting', label: 'Troubleshooting', icon: AlertTriangle },
   { path: '/quality-control', label: 'Quality Control', icon: CheckCircle },
   { path: '/shipping', label: 'Shipping', icon: Truck },
+];
+
+const adminItems = [
   { path: '/administration', label: 'Administration', icon: Settings },
 ];
 
@@ -47,32 +51,64 @@ export function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-        {navItems.map((item) => {
-          const isActive = location.pathname === item.path;
-          const Icon = item.icon;
+      <nav className="flex-1 p-4 overflow-y-auto">
+        <div className="space-y-1">
+          {productionItems.map((item) => {
+            const isActive = location.pathname === item.path;
+            const Icon = item.icon;
 
-          return (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className="relative block"
-            >
-              <motion.div
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                  isActive
-                    ? 'bg-sidebar-primary text-sidebar-primary-foreground'
-                    : 'text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
-                }`}
-                whileHover={{ x: isActive ? 0 : 4 }}
-                transition={{ duration: 0.15 }}
+            return (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                className="relative block"
               >
-                <Icon className="w-5 h-5 flex-shrink-0" />
-                <span className="text-sm font-medium">{item.label}</span>
-              </motion.div>
-            </NavLink>
-          );
-        })}
+                <motion.div
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                    isActive
+                      ? 'bg-sidebar-primary text-sidebar-primary-foreground'
+                      : 'text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                  }`}
+                  whileHover={{ x: isActive ? 0 : 4 }}
+                  transition={{ duration: 0.15 }}
+                >
+                  <Icon className="w-5 h-5 flex-shrink-0" />
+                  <span className="text-sm font-medium">{item.label}</span>
+                </motion.div>
+              </NavLink>
+            );
+          })}
+        </div>
+
+        <Separator className="my-4" />
+
+        <div className="space-y-1">
+          {adminItems.map((item) => {
+            const isActive = location.pathname === item.path;
+            const Icon = item.icon;
+
+            return (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                className="relative block"
+              >
+                <motion.div
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                    isActive
+                      ? 'bg-sidebar-primary text-sidebar-primary-foreground'
+                      : 'text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                  }`}
+                  whileHover={{ x: isActive ? 0 : 4 }}
+                  transition={{ duration: 0.15 }}
+                >
+                  <Icon className="w-5 h-5 flex-shrink-0" />
+                  <span className="text-sm font-medium">{item.label}</span>
+                </motion.div>
+              </NavLink>
+            );
+          })}
+        </div>
       </nav>
 
     </aside>
