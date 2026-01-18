@@ -57,10 +57,6 @@ export default function QualityControl() {
       initial="hidden"
       animate="show"
     >
-      <motion.div variants={item}>
-        <h1 className="text-2xl font-semibold text-foreground">Quality Control</h1>
-        <p className="text-muted-foreground">Final ATR review and sign-off before shipping</p>
-      </motion.div>
 
       {/* Stats */}
       <motion.div variants={item} className="grid grid-cols-4 gap-4">

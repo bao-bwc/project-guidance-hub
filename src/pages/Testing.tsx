@@ -32,10 +32,6 @@ export default function Testing() {
       initial="hidden"
       animate="show"
     >
-      <motion.div variants={item}>
-        <h1 className="text-2xl font-semibold text-foreground">Testing Station</h1>
-        <p className="text-muted-foreground">ATP execution and ATR generation</p>
-      </motion.div>
 
       {/* Active Test Info */}
       <motion.div variants={item} className="mes-card bg-info/5 border-info/20">

@@ -33,10 +33,6 @@ export default function Assembly() {
       initial="hidden"
       animate="show"
     >
-      <motion.div variants={item}>
-        <h1 className="text-2xl font-semibold text-foreground">Assembly Station</h1>
-        <p className="text-muted-foreground">Integrated assembly and work instructions interface</p>
-      </motion.div>
 
       {/* Active Session Info */}
       <motion.div variants={item} className="mes-card bg-accent/5 border-accent/20">

@@ -52,10 +52,6 @@ export default function PartMaster() {
       initial="hidden"
       animate="show"
     >
-      <motion.div variants={item}>
-        <h1 className="text-2xl font-semibold text-foreground">Part Master</h1>
-        <p className="text-muted-foreground">Manage parts inventory and BOM hierarchy</p>
-      </motion.div>
 
       {/* Tabs */}
       <motion.div variants={item} className="flex gap-2">

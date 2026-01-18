@@ -174,11 +174,6 @@ export default function Stockroom() {
       initial="hidden"
       animate="show"
     >
-      {/* Header */}
-      <motion.div variants={item}>
-        <h1 className="text-2xl font-semibold text-foreground">Stockroom</h1>
-        <p className="text-muted-foreground">Inventory management, picking, and receiving operations</p>
-      </motion.div>
 
       {/* Stats Cards */}
       <motion.div variants={item} className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
