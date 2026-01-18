@@ -38,13 +38,13 @@ export function Sidebar() {
     <aside className="mes-sidebar h-screen flex flex-col">
       {/* Logo */}
       <div className="p-6 border-b border-sidebar-border">
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-2">
           <img 
             src={brandywineLogo} 
             alt="Brandywine Communications Logo" 
-            className="h-10 w-auto object-contain"
+            className="h-20 w-auto object-contain"
           />
-          <span className="text-[10px] text-destructive font-medium tracking-tight">
+          <span className="text-sm text-destructive font-medium leading-tight">
             pc/Link Real-Time Production Extension
           </span>
         </div>
