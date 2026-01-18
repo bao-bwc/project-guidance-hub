@@ -44,7 +44,7 @@ export function Sidebar() {
             alt="Brandywine Communications Logo" 
             className="h-20 w-auto object-contain"
           />
-          <span className="text-xs text-destructive font-medium whitespace-nowrap">
+          <span className="text-xs text-destructive font-medium whitespace-nowrap text-center w-full">
             pc/Link Real-Time Production Extension
           </span>
         </div>
