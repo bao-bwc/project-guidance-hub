@@ -27,10 +27,6 @@ export default function Dashboard() {
       initial="hidden"
       animate="show"
     >
-      <motion.div variants={item}>
-        <h1 className="text-2xl font-semibold text-foreground">Dashboard</h1>
-        <p className="text-muted-foreground">Real-time manufacturing overview</p>
-      </motion.div>
 
       {/* Stats Row */}
       <motion.div variants={item} className="grid grid-cols-2 lg:grid-cols-4 gap-4">

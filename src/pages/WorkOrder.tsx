@@ -37,10 +37,6 @@ export default function WorkOrder() {
       initial="hidden"
       animate="show"
     >
-      <motion.div variants={item}>
-        <h1 className="text-2xl font-semibold text-foreground">Work Orders</h1>
-        <p className="text-muted-foreground">Manage and track production work orders</p>
-      </motion.div>
 
       {/* Stats */}
       <motion.div variants={item} className="grid grid-cols-3 gap-4">

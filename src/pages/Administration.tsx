@@ -45,10 +45,6 @@ export default function Administration() {
       initial="hidden"
       animate="show"
     >
-      <motion.div variants={item}>
-        <h1 className="text-2xl font-semibold text-foreground">Administration</h1>
-        <p className="text-muted-foreground">User management and system audit logs</p>
-      </motion.div>
 
       {/* Tabs */}
       <motion.div variants={item} className="flex gap-2">

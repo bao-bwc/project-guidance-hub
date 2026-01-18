@@ -64,10 +64,6 @@ export default function Shipping() {
       initial="hidden"
       animate="show"
     >
-      <motion.div variants={item}>
-        <h1 className="text-2xl font-semibold text-foreground">Shipping</h1>
-        <p className="text-muted-foreground">Manage outbound shipments and tracking</p>
-      </motion.div>
 
       {/* Stats */}
       <motion.div variants={item} className="grid grid-cols-4 gap-4">
