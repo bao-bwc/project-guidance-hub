@@ -65,9 +65,9 @@ export function AuthenticatedHeader() {
     <header className="mes-header flex items-center justify-between px-6 border-l border-border">
       {/* Left: Module Name & Description */}
       <div className="flex flex-col">
-        <h1 className="text-lg font-semibold text-foreground">{currentRoute.label}</h1>
+        <h1 className="text-2xl font-semibold text-foreground">{currentRoute.label}</h1>
         {currentRoute.description && (
-          <p className="text-sm text-muted-foreground">{currentRoute.description}</p>
+          <p className="text-base text-muted-foreground">{currentRoute.description}</p>
         )}
       </div>
 
