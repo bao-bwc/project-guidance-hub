@@ -1,19 +1,20 @@
 import { useState, useEffect } from 'react';
-import { LogOut, ChevronRight, Clock } from 'lucide-react';
+import { LogOut, Clock } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 
-const routeLabels: Record<string, string> = {
-  dashboard: 'Dashboard',
-  'part-master': 'Part Master',
-  'work-order': 'Work Order',
-  assembly: 'Assembly',
-  testing: 'Testing',
-  troubleshooting: 'Troubleshooting',
-  'quality-control': 'Quality Control',
-  shipping: 'Shipping',
-  administration: 'Administration',
+const routeInfo: Record<string, { label: string; description: string }> = {
+  dashboard: { label: 'Dashboard', description: 'Real-time manufacturing overview' },
+  'part-master': { label: 'Part Master', description: 'Manage parts inventory and BOM hierarchy' },
+  'work-order': { label: 'Work Orders', description: 'Manage and track production work orders' },
+  stockroom: { label: 'Stockroom', description: 'Inventory management, picking, and receiving operations' },
+  assembly: { label: 'Assembly Station', description: 'Integrated assembly and work instructions interface' },
+  testing: { label: 'Testing Station', description: 'ATP execution and ATR generation' },
+  troubleshooting: { label: 'Troubleshooting', description: 'Track and resolve production defects' },
+  'quality-control': { label: 'Quality Control', description: 'ATR review and approval workflow' },
+  shipping: { label: 'Shipping', description: 'Manage shipments and track deliveries' },
+  administration: { label: 'Administration', description: 'User management and system audit logs' },
 };
 
 export function AuthenticatedHeader() {
@@ -34,15 +35,13 @@ export function AuthenticatedHeader() {
     navigate('/');
   };
 
-  const getBreadcrumbs = () => {
+  const getCurrentRoute = () => {
     const paths = location.pathname.split('/').filter(Boolean);
-    return paths.map((path, index) => ({
-      label: routeLabels[path] || path,
-      isLast: index === paths.length - 1,
-    }));
+    const currentPath = paths[paths.length - 1] || 'dashboard';
+    return routeInfo[currentPath] || { label: currentPath, description: '' };
   };
 
-  const breadcrumbs = getBreadcrumbs();
+  const currentRoute = getCurrentRoute();
 
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString('en-US', {
@@ -64,17 +63,13 @@ export function AuthenticatedHeader() {
 
   return (
     <header className="mes-header flex items-center justify-between px-6 border-l border-border">
-      {/* Left: Breadcrumbs */}
-      <nav className="flex items-center gap-1 text-sm">
-        {breadcrumbs.map((crumb, index) => (
-          <span key={index} className="flex items-center gap-1">
-            {index > 0 && <ChevronRight className="w-4 h-4 text-muted-foreground" />}
-            <span className={crumb.isLast ? 'text-foreground font-medium' : 'text-muted-foreground'}>
-              {crumb.label}
-            </span>
-          </span>
-        ))}
-      </nav>
+      {/* Left: Module Name & Description */}
+      <div className="flex flex-col">
+        <h1 className="text-lg font-semibold text-foreground">{currentRoute.label}</h1>
+        {currentRoute.description && (
+          <p className="text-sm text-muted-foreground">{currentRoute.description}</p>
+        )}
+      </div>
 
       {/* Center: Clock & User Info */}
       <div className="flex flex-col items-center">
