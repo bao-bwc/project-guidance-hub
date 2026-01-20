@@ -1,8 +1,10 @@
 import { motion } from 'framer-motion';
-import { ShieldCheck, FileText, ClipboardCheck, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
+import { ShieldCheck, FileText, ClipboardCheck, AlertCircle, CheckCircle2, Clock, Wrench, BookOpen } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const complianceMetrics = [
   { label: 'Document Control', score: 94, status: 'compliant' },
@@ -18,6 +20,40 @@ const recentAudits = [
   { id: 'AUD-2024-002', type: 'Supplier Audit', date: '2024-01-22', status: 'In Progress', findings: 0 },
   { id: 'AUD-2024-003', type: 'Process Audit', date: '2024-02-01', status: 'Scheduled', findings: 0 },
 ];
+
+const equipmentCalibration = [
+  { id: 'CAL-001', equipment: 'Digital Multimeter', lastCal: '2024-01-10', nextCal: '2024-07-10', status: 'Current' },
+  { id: 'CAL-002', equipment: 'Torque Wrench Set', lastCal: '2024-01-05', nextCal: '2024-04-05', status: 'Current' },
+  { id: 'CAL-003', equipment: 'Oscilloscope', lastCal: '2023-08-15', nextCal: '2024-02-15', status: 'Due Soon' },
+  { id: 'CAL-004', equipment: 'Pressure Gauge', lastCal: '2023-06-20', nextCal: '2024-01-20', status: 'Overdue' },
+  { id: 'CAL-005', equipment: 'Temperature Probe', lastCal: '2024-01-18', nextCal: '2024-07-18', status: 'Current' },
+];
+
+const documentLibrary = {
+  systemManuals: [
+    { document: 'QMS-001', title: 'Quality Management System Manual', revision: 'Rev 5.0', owner: 'Quality Manager' },
+    { document: 'QMS-002', title: 'AS9100D Compliance Manual', revision: 'Rev 3.2', owner: 'Quality Manager' },
+  ],
+  systemProcedures: [
+    { document: 'SOP-001', title: 'Document Control Procedure', revision: 'Rev 4.1', owner: 'Document Control' },
+    { document: 'SOP-002', title: 'Internal Audit Procedure', revision: 'Rev 3.0', owner: 'Quality Assurance' },
+    { document: 'SOP-003', title: 'Corrective Action Procedure', revision: 'Rev 2.5', owner: 'Quality Manager' },
+    { document: 'SOP-004', title: 'Supplier Quality Management', revision: 'Rev 2.1', owner: 'Procurement' },
+  ],
+  workInstructions: [
+    { document: 'WI-001', title: 'PCB Assembly Inspection', revision: 'Rev 6.0', owner: 'Production Lead' },
+    { document: 'WI-002', title: 'Final Product Testing', revision: 'Rev 4.2', owner: 'Test Engineering' },
+    { document: 'WI-003', title: 'Equipment Calibration', revision: 'Rev 3.1', owner: 'Maintenance' },
+    { document: 'WI-004', title: 'Nonconformance Handling', revision: 'Rev 2.0', owner: 'Quality Assurance' },
+  ],
+  forms: [
+    { document: 'FM-001', title: 'Corrective Action Request Form', revision: 'Rev 3.0', owner: 'Quality Manager' },
+    { document: 'FM-002', title: 'Internal Audit Checklist', revision: 'Rev 2.5', owner: 'Quality Assurance' },
+    { document: 'FM-003', title: 'Calibration Record Form', revision: 'Rev 1.2', owner: 'Maintenance' },
+    { document: 'FM-004', title: 'Supplier Evaluation Form', revision: 'Rev 2.0', owner: 'Procurement' },
+    { document: 'FM-005', title: 'Training Record Form', revision: 'Rev 1.5', owner: 'HR' },
+  ],
+};
 
 export default function AS9100Compliance() {
   const overallScore = Math.round(
@@ -206,6 +242,175 @@ export default function AS9100Compliance() {
                 </div>
               ))}
             </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      {/* Equipment Calibration */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.45 }}
+      >
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Wrench className="h-5 w-5" />
+              Equipment Calibration
+            </CardTitle>
+            <CardDescription>Calibration status and schedule tracking</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>ID</TableHead>
+                  <TableHead>Equipment</TableHead>
+                  <TableHead>Last Calibration</TableHead>
+                  <TableHead>Next Calibration</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {equipmentCalibration.map((item) => (
+                  <TableRow key={item.id}>
+                    <TableCell className="font-medium">{item.id}</TableCell>
+                    <TableCell>{item.equipment}</TableCell>
+                    <TableCell>{item.lastCal}</TableCell>
+                    <TableCell>{item.nextCal}</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          item.status === 'Current'
+                            ? 'default'
+                            : item.status === 'Due Soon'
+                            ? 'secondary'
+                            : 'destructive'
+                        }
+                        className={item.status === 'Due Soon' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' : ''}
+                      >
+                        {item.status}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      {/* Document Library */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.5 }}
+      >
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BookOpen className="h-5 w-5" />
+              Document Library
+            </CardTitle>
+            <CardDescription>Controlled documents and quality records</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="systemManuals" className="w-full">
+              <TabsList className="grid w-full grid-cols-4">
+                <TabsTrigger value="systemManuals">System Manuals</TabsTrigger>
+                <TabsTrigger value="systemProcedures">System Procedures</TabsTrigger>
+                <TabsTrigger value="workInstructions">Work Instructions</TabsTrigger>
+                <TabsTrigger value="forms">Forms</TabsTrigger>
+              </TabsList>
+              <TabsContent value="systemManuals" className="mt-4">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Document</TableHead>
+                      <TableHead>Title</TableHead>
+                      <TableHead>Revision</TableHead>
+                      <TableHead>Owner</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {documentLibrary.systemManuals.map((doc) => (
+                      <TableRow key={doc.document}>
+                        <TableCell className="font-medium">{doc.document}</TableCell>
+                        <TableCell>{doc.title}</TableCell>
+                        <TableCell><Badge variant="outline">{doc.revision}</Badge></TableCell>
+                        <TableCell>{doc.owner}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TabsContent>
+              <TabsContent value="systemProcedures" className="mt-4">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Document</TableHead>
+                      <TableHead>Title</TableHead>
+                      <TableHead>Revision</TableHead>
+                      <TableHead>Owner</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {documentLibrary.systemProcedures.map((doc) => (
+                      <TableRow key={doc.document}>
+                        <TableCell className="font-medium">{doc.document}</TableCell>
+                        <TableCell>{doc.title}</TableCell>
+                        <TableCell><Badge variant="outline">{doc.revision}</Badge></TableCell>
+                        <TableCell>{doc.owner}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TabsContent>
+              <TabsContent value="workInstructions" className="mt-4">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Document</TableHead>
+                      <TableHead>Title</TableHead>
+                      <TableHead>Revision</TableHead>
+                      <TableHead>Owner</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {documentLibrary.workInstructions.map((doc) => (
+                      <TableRow key={doc.document}>
+                        <TableCell className="font-medium">{doc.document}</TableCell>
+                        <TableCell>{doc.title}</TableCell>
+                        <TableCell><Badge variant="outline">{doc.revision}</Badge></TableCell>
+                        <TableCell>{doc.owner}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TabsContent>
+              <TabsContent value="forms" className="mt-4">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Document</TableHead>
+                      <TableHead>Title</TableHead>
+                      <TableHead>Revision</TableHead>
+                      <TableHead>Owner</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {documentLibrary.forms.map((doc) => (
+                      <TableRow key={doc.document}>
+                        <TableCell className="font-medium">{doc.document}</TableCell>
+                        <TableCell>{doc.title}</TableCell>
+                        <TableCell><Badge variant="outline">{doc.revision}</Badge></TableCell>
+                        <TableCell>{doc.owner}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TabsContent>
+            </Tabs>
           </CardContent>
         </Card>
       </motion.div>
