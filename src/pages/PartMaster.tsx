@@ -1,23 +1,49 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Package, ChevronRight, FileText, ClipboardCheck, FolderTree } from 'lucide-react';
+import { Search, Package, ChevronRight, FileText, ClipboardCheck, FolderTree, GitCompare, Plus, Minus, Equal } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { mockParts } from '@/data/mockData';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const bomHierarchy = [
   {
     bomNo: '033010011',
     description: 'MMC CONFIGURATION GPNTS MGU TESTBED',
     children: [
-      { partNo: '033000002', description: 'MODULAR MASTER CLOCK CHASSIS ASSY' },
-      { partNo: '033000003', description: 'MMC MASTER CONTROL MODULE GPNTS' },
-      { partNo: '001001525', description: 'PCA MCM OSM FRONT - GPNTS' },
-      { partNo: '925000326', description: 'FW, GPNTS-MMC RAYTHEON BUNDLE' },
-      { partNo: '003001174', description: 'PANEL REAR OSM BLANK' },
-      { partNo: '405001069', description: 'SCREW MACH 4-40x1/2 FHPD 100 CRES' },
-      { partNo: '850000130', description: 'INTERFACE CONT DWG - MGU CONFIG C' },
-      { partNo: '950000125', description: 'MMC ATP' },
+      { partNo: '033000002', description: 'MODULAR MASTER CLOCK CHASSIS ASSY', qty: 1 },
+      { partNo: '033000003', description: 'MMC MASTER CONTROL MODULE GPNTS', qty: 1 },
+      { partNo: '001001525', description: 'PCA MCM OSM FRONT - GPNTS', qty: 2 },
+      { partNo: '925000326', description: 'FW, GPNTS-MMC RAYTHEON BUNDLE', qty: 1 },
+      { partNo: '003001174', description: 'PANEL REAR OSM BLANK', qty: 4 },
+      { partNo: '405001069', description: 'SCREW MACH 4-40x1/2 FHPD 100 CRES', qty: 12 },
+      { partNo: '850000130', description: 'INTERFACE CONT DWG - MGU CONFIG C', qty: 1 },
+      { partNo: '950000125', description: 'MMC ATP', qty: 1 },
+    ],
+  },
+  {
+    bomNo: '033010019',
+    description: '1U MMC- NDDS TIME DIST UNIT',
+    children: [
+      { partNo: '033000002', description: 'MODULAR MASTER CLOCK CHASSIS ASSY', qty: 1 },
+      { partNo: '033000004', description: 'MMC TIMING MODULE NDDS', qty: 2 },
+      { partNo: '001001530', description: 'PCA TIMING FRONT PANEL', qty: 1 },
+      { partNo: '003001174', description: 'PANEL REAR OSM BLANK', qty: 2 },
+      { partNo: '405001069', description: 'SCREW MACH 4-40x1/2 FHPD 100 CRES', qty: 8 },
+      { partNo: '950000130', description: 'NDDS ATP', qty: 1 },
+    ],
+  },
+  {
+    bomNo: '033010023',
+    description: '2U MMC NG SPERRY MARINE OPC',
+    children: [
+      { partNo: '033000002', description: 'MODULAR MASTER CLOCK CHASSIS ASSY', qty: 1 },
+      { partNo: '033000003', description: 'MMC MASTER CONTROL MODULE GPNTS', qty: 1 },
+      { partNo: '033000005', description: 'MMC SPERRY MARINE MODULE', qty: 1 },
+      { partNo: '001001525', description: 'PCA MCM OSM FRONT - GPNTS', qty: 2 },
+      { partNo: '003001180', description: 'PANEL REAR SPERRY CONFIG', qty: 2 },
+      { partNo: '405001069', description: 'SCREW MACH 4-40x1/2 FHPD 100 CRES', qty: 16 },
+      { partNo: '950000135', description: 'SPERRY MARINE ATP', qty: 1 },
     ],
   },
 ];
@@ -38,7 +64,42 @@ const item = {
 export default function PartMaster() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPart, setSelectedPart] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'parts' | 'bom'>('parts');
+  const [activeTab, setActiveTab] = useState<'parts' | 'bom' | 'compare'>('parts');
+  const [compareBom1, setCompareBom1] = useState<string>('');
+  const [compareBom2, setCompareBom2] = useState<string>('');
+
+  const getBomComparison = () => {
+    const bom1 = bomHierarchy.find(b => b.bomNo === compareBom1);
+    const bom2 = bomHierarchy.find(b => b.bomNo === compareBom2);
+    if (!bom1 || !bom2) return { added: [], removed: [], changed: [], unchanged: [] };
+
+    const bom1Parts = new Map(bom1.children.map(c => [c.partNo, c]));
+    const bom2Parts = new Map(bom2.children.map(c => [c.partNo, c]));
+
+    const added: typeof bom2.children = [];
+    const removed: typeof bom1.children = [];
+    const changed: { partNo: string; description: string; qty1: number; qty2: number }[] = [];
+    const unchanged: typeof bom1.children = [];
+
+    bom1.children.forEach(part => {
+      const bom2Part = bom2Parts.get(part.partNo);
+      if (!bom2Part) {
+        removed.push(part);
+      } else if (bom2Part.qty !== part.qty) {
+        changed.push({ partNo: part.partNo, description: part.description, qty1: part.qty, qty2: bom2Part.qty });
+      } else {
+        unchanged.push(part);
+      }
+    });
+
+    bom2.children.forEach(part => {
+      if (!bom1Parts.has(part.partNo)) {
+        added.push(part);
+      }
+    });
+
+    return { added, removed, changed, unchanged };
+  };
 
   const filteredParts = mockParts.filter(part =>
     part.partNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -71,9 +132,17 @@ export default function PartMaster() {
           <FolderTree className="w-4 h-4" />
           BOM Navigator
         </Button>
+        <Button
+          variant={activeTab === 'compare' ? 'default' : 'outline'}
+          onClick={() => setActiveTab('compare')}
+          className="gap-2"
+        >
+          <GitCompare className="w-4 h-4" />
+          BOM Comparison
+        </Button>
       </motion.div>
 
-      {activeTab === 'parts' ? (
+      {activeTab === 'parts' && (
         <>
           {/* Search */}
           <motion.div variants={item} className="mes-card">
@@ -136,8 +205,9 @@ export default function PartMaster() {
             </div>
           </motion.div>
         </>
-      ) : (
-        /* BOM Navigator */
+      )}
+
+      {activeTab === 'bom' && (
         <motion.div variants={item} className="grid lg:grid-cols-2 gap-6">
           <div className="mes-card">
             <h2 className="text-lg font-semibold mb-4 text-foreground">BOM Hierarchy</h2>
@@ -201,6 +271,194 @@ export default function PartMaster() {
               </div>
             </div>
           </div>
+        </motion.div>
+      )}
+
+      {activeTab === 'compare' && (
+        <motion.div variants={item} className="space-y-6">
+          {/* BOM Selection */}
+          <div className="mes-card">
+            <h2 className="text-lg font-semibold mb-4 text-foreground">Select BOMs to Compare</h2>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-muted-foreground">Base BOM (Reference)</label>
+                <Select value={compareBom1} onValueChange={setCompareBom1}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select base BOM" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {bomHierarchy.map((bom) => (
+                      <SelectItem key={bom.bomNo} value={bom.bomNo}>
+                        {bom.bomNo} - {bom.description}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-muted-foreground">Compare BOM</label>
+                <Select value={compareBom2} onValueChange={setCompareBom2}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select comparison BOM" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {bomHierarchy.map((bom) => (
+                      <SelectItem key={bom.bomNo} value={bom.bomNo}>
+                        {bom.bomNo} - {bom.description}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+
+          {/* Comparison Results */}
+          {compareBom1 && compareBom2 && (
+            <>
+              {(() => {
+                const comparison = getBomComparison();
+                return (
+                  <>
+                    {/* Summary Cards */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="mes-card bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/50">
+                            <Plus className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                          </div>
+                          <div>
+                            <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-400">{comparison.added.length}</p>
+                            <p className="text-sm text-emerald-600 dark:text-emerald-500">Added</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mes-card bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-900">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 rounded-lg bg-red-100 dark:bg-red-900/50">
+                            <Minus className="w-5 h-5 text-red-600 dark:text-red-400" />
+                          </div>
+                          <div>
+                            <p className="text-2xl font-bold text-red-700 dark:text-red-400">{comparison.removed.length}</p>
+                            <p className="text-sm text-red-600 dark:text-red-500">Removed</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mes-card bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 rounded-lg bg-amber-100 dark:bg-amber-900/50">
+                            <GitCompare className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                          </div>
+                          <div>
+                            <p className="text-2xl font-bold text-amber-700 dark:text-amber-400">{comparison.changed.length}</p>
+                            <p className="text-sm text-amber-600 dark:text-amber-500">Changed</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mes-card bg-slate-50 dark:bg-slate-950/30 border-slate-200 dark:border-slate-800">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 rounded-lg bg-slate-100 dark:bg-slate-900/50">
+                            <Equal className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+                          </div>
+                          <div>
+                            <p className="text-2xl font-bold text-slate-700 dark:text-slate-400">{comparison.unchanged.length}</p>
+                            <p className="text-sm text-slate-600 dark:text-slate-500">Unchanged</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Detailed Comparison */}
+                    <div className="mes-card">
+                      <h2 className="text-lg font-semibold mb-4 text-foreground">Comparison Details</h2>
+                      <div className="space-y-4">
+                        {comparison.added.length > 0 && (
+                          <div>
+                            <h3 className="flex items-center gap-2 text-sm font-medium text-emerald-600 dark:text-emerald-400 mb-2">
+                              <Plus className="w-4 h-4" /> Added Parts
+                            </h3>
+                            <div className="space-y-1">
+                              {comparison.added.map((part) => (
+                                <div key={part.partNo} className="flex items-center gap-3 p-2 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg border border-emerald-200 dark:border-emerald-900">
+                                  <span className="font-mono text-sm font-medium">{part.partNo}</span>
+                                  <span className="text-sm text-muted-foreground flex-1">{part.description}</span>
+                                  <span className="text-sm font-medium">Qty: {part.qty}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {comparison.removed.length > 0 && (
+                          <div>
+                            <h3 className="flex items-center gap-2 text-sm font-medium text-red-600 dark:text-red-400 mb-2">
+                              <Minus className="w-4 h-4" /> Removed Parts
+                            </h3>
+                            <div className="space-y-1">
+                              {comparison.removed.map((part) => (
+                                <div key={part.partNo} className="flex items-center gap-3 p-2 bg-red-50 dark:bg-red-950/30 rounded-lg border border-red-200 dark:border-red-900">
+                                  <span className="font-mono text-sm font-medium">{part.partNo}</span>
+                                  <span className="text-sm text-muted-foreground flex-1">{part.description}</span>
+                                  <span className="text-sm font-medium">Qty: {part.qty}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {comparison.changed.length > 0 && (
+                          <div>
+                            <h3 className="flex items-center gap-2 text-sm font-medium text-amber-600 dark:text-amber-400 mb-2">
+                              <GitCompare className="w-4 h-4" /> Quantity Changes
+                            </h3>
+                            <div className="space-y-1">
+                              {comparison.changed.map((part) => (
+                                <div key={part.partNo} className="flex items-center gap-3 p-2 bg-amber-50 dark:bg-amber-950/30 rounded-lg border border-amber-200 dark:border-amber-900">
+                                  <span className="font-mono text-sm font-medium">{part.partNo}</span>
+                                  <span className="text-sm text-muted-foreground flex-1">{part.description}</span>
+                                  <span className="text-sm">
+                                    <span className="text-red-600 dark:text-red-400 line-through">{part.qty1}</span>
+                                    <span className="mx-2">→</span>
+                                    <span className="text-emerald-600 dark:text-emerald-400 font-medium">{part.qty2}</span>
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {comparison.unchanged.length > 0 && (
+                          <div>
+                            <h3 className="flex items-center gap-2 text-sm font-medium text-muted-foreground mb-2">
+                              <Equal className="w-4 h-4" /> Unchanged Parts ({comparison.unchanged.length})
+                            </h3>
+                            <div className="space-y-1">
+                              {comparison.unchanged.map((part) => (
+                                <div key={part.partNo} className="flex items-center gap-3 p-2 bg-muted/30 rounded-lg border border-border">
+                                  <span className="font-mono text-sm">{part.partNo}</span>
+                                  <span className="text-sm text-muted-foreground flex-1">{part.description}</span>
+                                  <span className="text-sm text-muted-foreground">Qty: {part.qty}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                );
+              })()}
+            </>
+          )}
+
+          {(!compareBom1 || !compareBom2) && (
+            <div className="mes-card">
+              <div className="text-center py-12 text-muted-foreground">
+                <GitCompare className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                <p>Select two BOMs above to see the comparison results</p>
+              </div>
+            </div>
+          )}
         </motion.div>
       )}
     </motion.div>
