@@ -11,6 +11,7 @@ import {
   Warehouse,
   Truck,
   Settings,
+  ShieldCheck,
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import brandywineLogo from '@/assets/brandywine-logo.png';
@@ -25,6 +26,10 @@ const productionItems = [
   { path: '/troubleshooting', label: 'Troubleshooting', icon: AlertTriangle },
   { path: '/quality-control', label: 'Quality Control', icon: CheckCircle },
   { path: '/shipping', label: 'Shipping', icon: Truck },
+];
+
+const as9100Items = [
+  { path: '/as9100-compliance', label: 'AS9100 Compliance', icon: ShieldCheck },
 ];
 
 const adminItems = [
@@ -54,6 +59,36 @@ export function Sidebar() {
       <nav className="flex-1 p-4 overflow-y-auto">
         <div className="space-y-1">
           {productionItems.map((item) => {
+            const isActive = location.pathname === item.path;
+            const Icon = item.icon;
+
+            return (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                className="relative block"
+              >
+                <motion.div
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                    isActive
+                      ? 'bg-sidebar-primary text-sidebar-primary-foreground'
+                      : 'text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                  }`}
+                  whileHover={{ x: isActive ? 0 : 4 }}
+                  transition={{ duration: 0.15 }}
+                >
+                  <Icon className="w-5 h-5 flex-shrink-0" />
+                  <span className="text-sm font-medium">{item.label}</span>
+                </motion.div>
+              </NavLink>
+            );
+          })}
+        </div>
+
+        <Separator className="my-4 mx-4 w-auto bg-sidebar-foreground/20" />
+
+        <div className="space-y-1">
+          {as9100Items.map((item) => {
             const isActive = location.pathname === item.path;
             const Icon = item.icon;
 
