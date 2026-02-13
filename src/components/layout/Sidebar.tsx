@@ -12,6 +12,7 @@ import {
   Truck,
   Settings,
   ShieldCheck,
+  Info,
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import brandywineLogo from '@/assets/brandywine-logo.png';
@@ -34,6 +35,7 @@ const as9100Items = [
 
 const adminItems = [
   { path: '/administration', label: 'Administration', icon: Settings },
+  { path: '/about', label: 'About', icon: Info },
 ];
 
 export function Sidebar() {
