@@ -18,6 +18,7 @@ import Shipping from "./pages/Shipping";
 import Administration from "./pages/Administration";
 import Stockroom from "./pages/Stockroom";
 import AS9100Compliance from "./pages/AS9100Compliance";
+import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -47,6 +48,7 @@ const App = () => (
               <Route path="/shipping" element={<Shipping />} />
               <Route path="/as9100-compliance" element={<AS9100Compliance />} />
               <Route path="/administration" element={<Administration />} />
+              <Route path="/about" element={<About />} />
             </Route>
             
             <Route path="*" element={<NotFound />} />
