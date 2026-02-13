@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Info, Bug, Send, Plus } from 'lucide-react';
+import { Info, Bug, Send, Plus, History } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -15,11 +15,24 @@ import { useToast } from '@/hooks/use-toast';
 import brandywineLogo from '@/assets/brandywine-logo.png';
 
 const initialRequests = [
-  { id: 1, type: 'feature', title: 'Add export to PDF for reports', status: 'Open', date: '2026-02-10', submittedBy: 'J. Smith' },
-  { id: 2, type: 'bug', title: 'Dashboard chart not loading on refresh', status: 'In Progress', date: '2026-02-08', submittedBy: 'A. Johnson' },
-  { id: 3, type: 'improvement', title: 'Improve search performance in Part Master', status: 'Closed', date: '2026-01-28', submittedBy: 'M. Davis' },
-  { id: 4, type: 'feature', title: 'Add barcode scanning to Stockroom', status: 'Open', date: '2026-02-12', submittedBy: 'R. Wilson' },
-  { id: 5, type: 'bug', title: 'Shipping label prints incorrect weight', status: 'Open', date: '2026-02-11', submittedBy: 'K. Lee' },
+  { id: 1, ticket: 'TKT-001', type: 'feature', title: 'Add export to PDF for reports', status: 'Open', date: '2026-02-10', submittedBy: 'J. Smith' },
+  { id: 2, ticket: 'TKT-002', type: 'bug', title: 'Dashboard chart not loading on refresh', status: 'In Progress', date: '2026-02-08', submittedBy: 'A. Johnson' },
+  { id: 3, ticket: 'TKT-003', type: 'improvement', title: 'Improve search performance in Part Master', status: 'Closed', date: '2026-01-28', submittedBy: 'M. Davis' },
+  { id: 4, ticket: 'TKT-004', type: 'feature', title: 'Add barcode scanning to Stockroom', status: 'Open', date: '2026-02-12', submittedBy: 'R. Wilson' },
+  { id: 5, ticket: 'TKT-005', type: 'bug', title: 'Shipping label prints incorrect weight', status: 'Open', date: '2026-02-11', submittedBy: 'K. Lee' },
+];
+
+const versionHistory = [
+  { version: '1.0.0', description: 'Initial production release with all core modules', date: '2026-02-13' },
+  { version: '0.9.0', description: 'Added AS9100 Compliance module with document library and equipment calibration', date: '2026-01-15' },
+  { version: '0.8.0', description: 'BOM Comparison feature added to Part Master', date: '2025-12-20' },
+  { version: '0.7.0', description: 'Shipping and Quality Control modules implemented', date: '2025-11-10' },
+  { version: '0.6.0', description: 'Testing and Troubleshooting modules added', date: '2025-10-05' },
+  { version: '0.5.0', description: 'Assembly module with work instructions and tracking', date: '2025-09-01' },
+  { version: '0.4.0', description: 'Stockroom inventory management system', date: '2025-08-01' },
+  { version: '0.3.0', description: 'Work Order creation and management', date: '2025-07-01' },
+  { version: '0.2.0', description: 'Part Master with BOM hierarchy', date: '2025-06-01' },
+  { version: '0.1.0', description: 'Dashboard and authentication system', date: '2025-05-01' },
 ];
 
 const statusColor = (status: string) => {
@@ -52,6 +65,7 @@ const About = () => {
     e.preventDefault();
     const newRequest = {
       id: requests.length + 1,
+      ticket: `TKT-${String(requests.length + 1).padStart(3, '0')}`,
       type: submissionType,
       title,
       status: 'Open',
@@ -77,6 +91,9 @@ const About = () => {
         <TabsList>
           <TabsTrigger value="about" className="flex items-center gap-2">
             <Info className="w-4 h-4" /> About
+          </TabsTrigger>
+          <TabsTrigger value="history" className="flex items-center gap-2">
+            <History className="w-4 h-4" /> History
           </TabsTrigger>
           <TabsTrigger value="feedback" className="flex items-center gap-2">
             <Bug className="w-4 h-4" /> Feature/Bug List
@@ -117,6 +134,37 @@ const About = () => {
           </motion.div>
         </TabsContent>
 
+        <TabsContent value="history">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Version History</CardTitle>
+                <CardDescription>Release notes and changelog</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Version</TableHead>
+                      <TableHead>Description</TableHead>
+                      <TableHead>Date</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {versionHistory.map((entry) => (
+                      <TableRow key={entry.version}>
+                        <TableCell><Badge variant="outline">{entry.version}</Badge></TableCell>
+                        <TableCell className="font-medium">{entry.description}</TableCell>
+                        <TableCell className="text-muted-foreground">{entry.date}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </TabsContent>
+
         <TabsContent value="feedback">
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <Card>
@@ -133,6 +181,7 @@ const About = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead>Ticket</TableHead>
                       <TableHead>Type</TableHead>
                       <TableHead>Title</TableHead>
                       <TableHead>Status</TableHead>
@@ -145,6 +194,7 @@ const About = () => {
                       const t = typeLabel(req.type);
                       return (
                         <TableRow key={req.id}>
+                          <TableCell className="font-mono text-muted-foreground">{req.ticket}</TableCell>
                           <TableCell><Badge variant={t.variant}>{t.label}</Badge></TableCell>
                           <TableCell className="font-medium">{req.title}</TableCell>
                           <TableCell><Badge variant={statusColor(req.status)}>{req.status}</Badge></TableCell>
