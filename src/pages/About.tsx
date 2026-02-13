@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Info, Bug, Send } from 'lucide-react';
+import { Info, Bug, Send, Plus } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -7,22 +7,63 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import brandywineLogo from '@/assets/brandywine-logo.png';
+
+const initialRequests = [
+  { id: 1, type: 'feature', title: 'Add export to PDF for reports', status: 'Open', date: '2026-02-10', submittedBy: 'J. Smith' },
+  { id: 2, type: 'bug', title: 'Dashboard chart not loading on refresh', status: 'In Progress', date: '2026-02-08', submittedBy: 'A. Johnson' },
+  { id: 3, type: 'improvement', title: 'Improve search performance in Part Master', status: 'Closed', date: '2026-01-28', submittedBy: 'M. Davis' },
+  { id: 4, type: 'feature', title: 'Add barcode scanning to Stockroom', status: 'Open', date: '2026-02-12', submittedBy: 'R. Wilson' },
+  { id: 5, type: 'bug', title: 'Shipping label prints incorrect weight', status: 'Open', date: '2026-02-11', submittedBy: 'K. Lee' },
+];
+
+const statusColor = (status: string) => {
+  switch (status) {
+    case 'Open': return 'default';
+    case 'In Progress': return 'secondary';
+    case 'Closed': return 'outline';
+    default: return 'default';
+  }
+};
+
+const typeLabel = (type: string) => {
+  switch (type) {
+    case 'feature': return { label: 'Feature', variant: 'default' as const };
+    case 'bug': return { label: 'Bug', variant: 'destructive' as const };
+    case 'improvement': return { label: 'Improvement', variant: 'secondary' as const };
+    default: return { label: type, variant: 'default' as const };
+  }
+};
 
 const About = () => {
   const { toast } = useToast();
   const [submissionType, setSubmissionType] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [requests, setRequests] = useState(initialRequests);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const newRequest = {
+      id: requests.length + 1,
+      type: submissionType,
+      title,
+      status: 'Open',
+      date: new Date().toISOString().split('T')[0],
+      submittedBy: 'Current User',
+    };
+    setRequests([newRequest, ...requests]);
     toast({ title: 'Submitted', description: 'Your submission has been recorded. Thank you!' });
     setSubmissionType('');
     setTitle('');
     setDescription('');
+    setDialogOpen(false);
   };
 
   return (
@@ -38,7 +79,7 @@ const About = () => {
             <Info className="w-4 h-4" /> About
           </TabsTrigger>
           <TabsTrigger value="feedback" className="flex items-center gap-2">
-            <Bug className="w-4 h-4" /> Feature/Bug Submission
+            <Bug className="w-4 h-4" /> Feature/Bug List
           </TabsTrigger>
         </TabsList>
 
@@ -78,41 +119,80 @@ const About = () => {
 
         <TabsContent value="feedback">
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <Card className="max-w-2xl">
-              <CardHeader>
-                <CardTitle className="text-lg">Submit Feature Request or Bug Report</CardTitle>
-                <CardDescription>Help us improve the system by reporting issues or suggesting features</CardDescription>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="text-lg">Feature/Bug List</CardTitle>
+                  <CardDescription>Track feature requests and bug reports</CardDescription>
+                </div>
+                <Button onClick={() => setDialogOpen(true)} className="flex items-center gap-2">
+                  <Plus className="w-4 h-4" /> Request
+                </Button>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Type</Label>
-                    <Select value={submissionType} onValueChange={setSubmissionType}>
-                      <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="feature">Feature Request</SelectItem>
-                        <SelectItem value="bug">Bug Report</SelectItem>
-                        <SelectItem value="improvement">Improvement</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Title</Label>
-                    <Input placeholder="Brief summary" value={title} onChange={(e) => setTitle(e.target.value)} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Description</Label>
-                    <Textarea placeholder="Provide details..." value={description} onChange={(e) => setDescription(e.target.value)} className="min-h-[120px]" />
-                  </div>
-                  <Button type="submit" className="flex items-center gap-2">
-                    <Send className="w-4 h-4" /> Submit
-                  </Button>
-                </form>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Title</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Submitted By</TableHead>
+                      <TableHead>Date</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {requests.map((req) => {
+                      const t = typeLabel(req.type);
+                      return (
+                        <TableRow key={req.id}>
+                          <TableCell><Badge variant={t.variant}>{t.label}</Badge></TableCell>
+                          <TableCell className="font-medium">{req.title}</TableCell>
+                          <TableCell><Badge variant={statusColor(req.status)}>{req.status}</Badge></TableCell>
+                          <TableCell>{req.submittedBy}</TableCell>
+                          <TableCell className="text-muted-foreground">{req.date}</TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
               </CardContent>
             </Card>
           </motion.div>
         </TabsContent>
       </Tabs>
+
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Submit Feature Request or Bug Report</DialogTitle>
+            <DialogDescription>Help us improve the system by reporting issues or suggesting features</DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label>Type</Label>
+              <Select value={submissionType} onValueChange={setSubmissionType}>
+                <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="feature">Feature Request</SelectItem>
+                  <SelectItem value="bug">Bug Report</SelectItem>
+                  <SelectItem value="improvement">Improvement</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Title</Label>
+              <Input placeholder="Brief summary" value={title} onChange={(e) => setTitle(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Description</Label>
+              <Textarea placeholder="Provide details..." value={description} onChange={(e) => setDescription(e.target.value)} className="min-h-[120px]" />
+            </div>
+            <Button type="submit" className="flex items-center gap-2">
+              <Send className="w-4 h-4" /> Submit
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
