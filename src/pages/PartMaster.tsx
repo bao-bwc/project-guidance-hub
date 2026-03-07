@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Package, ChevronRight, FileText, ClipboardCheck, FolderTree, GitCompare, Plus, Minus, Equal } from 'lucide-react';
+import { Search, Package, ChevronRight, FileText, ClipboardCheck, FolderTree, GitCompare, Plus, Minus, Equal, AlertTriangle, Activity, Clock, XCircle, CheckCircle2, TrendingDown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { mockParts } from '@/data/mockData';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 
 const bomHierarchy = [
   {
@@ -48,6 +49,52 @@ const bomHierarchy = [
   },
 ];
 
+type ObsolescenceStatus = 'Active' | 'NRND' | 'Last Buy' | 'Obsolete';
+type LifecyclePhase = 'Introduction' | 'Growth' | 'Mature' | 'Decline' | 'EOL';
+
+interface ObsolescencePart {
+  partNo: string;
+  description: string;
+  manufacturer: string;
+  status: ObsolescenceStatus;
+  alternatePartNo: string;
+  lastBuyDate: string;
+  affectedBOMs: string[];
+}
+
+interface LifecyclePart {
+  partNo: string;
+  description: string;
+  phase: LifecyclePhase;
+  introduced: string;
+  estimatedEOL: string;
+  remainingLife: number;
+  riskLevel: 'Low' | 'Medium' | 'High' | 'Critical';
+  notes: string;
+}
+
+const obsolescenceData: ObsolescencePart[] = [
+  { partNo: '001001525', description: 'PCA MCM OSM FRONT - GPNTS', manufacturer: 'Texas Instruments', status: 'NRND', alternatePartNo: '001001525-B', lastBuyDate: '2026-09-30', affectedBOMs: ['033010011', '033010023'] },
+  { partNo: '925000326', description: 'FW, GPNTS-MMC RAYTHEON BUNDLE', manufacturer: 'Raytheon', status: 'Active', alternatePartNo: '-', lastBuyDate: '-', affectedBOMs: ['033010011'] },
+  { partNo: '033000004', description: 'MMC TIMING MODULE NDDS', manufacturer: 'Brandywine', status: 'Last Buy', alternatePartNo: '033000004-R2', lastBuyDate: '2026-06-15', affectedBOMs: ['033010019'] },
+  { partNo: '003001174', description: 'PANEL REAR OSM BLANK', manufacturer: 'Brandywine', status: 'Active', alternatePartNo: '-', lastBuyDate: '-', affectedBOMs: ['033010011', '033010019'] },
+  { partNo: '405001069', description: 'SCREW MACH 4-40x1/2 FHPD 100 CRES', manufacturer: 'McMaster-Carr', status: 'Active', alternatePartNo: '-', lastBuyDate: '-', affectedBOMs: ['033010011', '033010019', '033010023'] },
+  { partNo: '033000005', description: 'MMC SPERRY MARINE MODULE', manufacturer: 'Sperry Marine', status: 'Obsolete', alternatePartNo: '033000005-V2', lastBuyDate: '2025-03-01', affectedBOMs: ['033010023'] },
+  { partNo: '001001530', description: 'PCA TIMING FRONT PANEL', manufacturer: 'Flex Ltd', status: 'NRND', alternatePartNo: '001001530-C', lastBuyDate: '2026-12-31', affectedBOMs: ['033010019'] },
+  { partNo: '003001180', description: 'PANEL REAR SPERRY CONFIG', manufacturer: 'Brandywine', status: 'Last Buy', alternatePartNo: '003001180-R1', lastBuyDate: '2026-08-01', affectedBOMs: ['033010023'] },
+];
+
+const lifecycleData: LifecyclePart[] = [
+  { partNo: '033000002', description: 'MODULAR MASTER CLOCK CHASSIS ASSY', phase: 'Mature', introduced: '2019-03-15', estimatedEOL: '2031-12-31', remainingLife: 72, riskLevel: 'Low', notes: 'Stable platform, no redesign planned' },
+  { partNo: '033000003', description: 'MMC MASTER CONTROL MODULE GPNTS', phase: 'Growth', introduced: '2022-06-01', estimatedEOL: '2034-06-30', remainingLife: 88, riskLevel: 'Low', notes: 'Active development, new features planned' },
+  { partNo: '001001525', description: 'PCA MCM OSM FRONT - GPNTS', phase: 'Decline', introduced: '2017-01-10', estimatedEOL: '2027-03-31', remainingLife: 18, riskLevel: 'High', notes: 'Key IC going NRND, redesign required' },
+  { partNo: '033000004', description: 'MMC TIMING MODULE NDDS', phase: 'Decline', introduced: '2018-09-20', estimatedEOL: '2026-12-31', remainingLife: 12, riskLevel: 'Critical', notes: 'Last buy deadline approaching' },
+  { partNo: '033000005', description: 'MMC SPERRY MARINE MODULE', phase: 'EOL', introduced: '2016-04-01', estimatedEOL: '2025-12-31', remainingLife: 0, riskLevel: 'Critical', notes: 'Obsolete, replacement V2 in qualification' },
+  { partNo: '925000326', description: 'FW, GPNTS-MMC RAYTHEON BUNDLE', phase: 'Mature', introduced: '2020-11-15', estimatedEOL: '2032-06-30', remainingLife: 65, riskLevel: 'Low', notes: 'Software bundle, regular updates' },
+  { partNo: '003001174', description: 'PANEL REAR OSM BLANK', phase: 'Mature', introduced: '2018-05-01', estimatedEOL: '2030-12-31', remainingLife: 58, riskLevel: 'Low', notes: 'Simple mechanical part, long life' },
+  { partNo: '405001069', description: 'SCREW MACH 4-40x1/2 FHPD 100 CRES', phase: 'Mature', introduced: '2015-01-01', estimatedEOL: '2040-12-31', remainingLife: 95, riskLevel: 'Low', notes: 'Standard COTS hardware' },
+];
+
 const container = {
   hidden: { opacity: 0 },
   show: {
@@ -64,9 +111,58 @@ const item = {
 export default function PartMaster() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPart, setSelectedPart] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'parts' | 'bom' | 'compare'>('parts');
+  const [activeTab, setActiveTab] = useState<'parts' | 'bom' | 'compare' | 'obsolescence' | 'lifecycle'>('parts');
   const [compareBom1, setCompareBom1] = useState<string>('');
   const [compareBom2, setCompareBom2] = useState<string>('');
+  const [selectedObsBom, setSelectedObsBom] = useState<string>('');
+  const [selectedLifecycleBom, setSelectedLifecycleBom] = useState<string>('');
+
+  const getObsolescenceStatusColor = (status: ObsolescenceStatus) => {
+    switch (status) {
+      case 'Active': return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400';
+      case 'NRND': return 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400';
+      case 'Last Buy': return 'bg-orange-100 text-orange-700 dark:bg-orange-900/50 dark:text-orange-400';
+      case 'Obsolete': return 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-400';
+    }
+  };
+
+  const getLifecyclePhaseColor = (phase: LifecyclePhase) => {
+    switch (phase) {
+      case 'Introduction': return 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-400';
+      case 'Growth': return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400';
+      case 'Mature': return 'bg-slate-100 text-slate-700 dark:bg-slate-900/50 dark:text-slate-400';
+      case 'Decline': return 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400';
+      case 'EOL': return 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-400';
+    }
+  };
+
+  const getRiskColor = (risk: string) => {
+    switch (risk) {
+      case 'Low': return 'text-emerald-600 dark:text-emerald-400';
+      case 'Medium': return 'text-amber-600 dark:text-amber-400';
+      case 'High': return 'text-orange-600 dark:text-orange-400';
+      case 'Critical': return 'text-red-600 dark:text-red-400';
+      default: return 'text-muted-foreground';
+    }
+  };
+
+  const getRemainingLifeColor = (pct: number) => {
+    if (pct >= 60) return 'bg-emerald-500';
+    if (pct >= 30) return 'bg-amber-500';
+    if (pct > 0) return 'bg-orange-500';
+    return 'bg-red-500';
+  };
+
+  const filteredObsolescence = selectedObsBom
+    ? obsolescenceData.filter(p => p.affectedBOMs.includes(selectedObsBom))
+    : obsolescenceData;
+
+  const filteredLifecycle = selectedLifecycleBom
+    ? lifecycleData.filter(p => {
+        const bom = bomHierarchy.find(b => b.bomNo === selectedLifecycleBom);
+        return bom?.children.some(c => c.partNo === p.partNo);
+      })
+    : lifecycleData;
 
   const getBomComparison = () => {
     const bom1 = bomHierarchy.find(b => b.bomNo === compareBom1);
@@ -106,6 +202,20 @@ export default function PartMaster() {
     part.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const obsStats = {
+    active: obsolescenceData.filter(p => p.status === 'Active').length,
+    nrnd: obsolescenceData.filter(p => p.status === 'NRND').length,
+    lastBuy: obsolescenceData.filter(p => p.status === 'Last Buy').length,
+    obsolete: obsolescenceData.filter(p => p.status === 'Obsolete').length,
+  };
+
+  const lifecycleStats = {
+    low: lifecycleData.filter(p => p.riskLevel === 'Low').length,
+    medium: lifecycleData.filter(p => p.riskLevel === 'Medium').length,
+    high: lifecycleData.filter(p => p.riskLevel === 'High').length,
+    critical: lifecycleData.filter(p => p.riskLevel === 'Critical').length,
+  };
+
   return (
     <motion.div
       className="space-y-6"
@@ -115,7 +225,7 @@ export default function PartMaster() {
     >
 
       {/* Tabs */}
-      <motion.div variants={item} className="flex gap-2">
+      <motion.div variants={item} className="flex gap-2 flex-wrap">
         <Button
           variant={activeTab === 'parts' ? 'default' : 'outline'}
           onClick={() => setActiveTab('parts')}
@@ -140,11 +250,27 @@ export default function PartMaster() {
           <GitCompare className="w-4 h-4" />
           BOM Comparison
         </Button>
+        <Button
+          variant={activeTab === 'obsolescence' ? 'default' : 'outline'}
+          onClick={() => setActiveTab('obsolescence')}
+          className="gap-2"
+        >
+          <AlertTriangle className="w-4 h-4" />
+          BOM Obsolescence
+        </Button>
+        <Button
+          variant={activeTab === 'lifecycle' ? 'default' : 'outline'}
+          onClick={() => setActiveTab('lifecycle')}
+          className="gap-2"
+        >
+          <Activity className="w-4 h-4" />
+          Lifecycle Analysis
+        </Button>
       </motion.div>
 
+      {/* Parts Inventory Tab */}
       {activeTab === 'parts' && (
         <>
-          {/* Search */}
           <motion.div variants={item} className="mes-card">
             <div className="flex gap-4">
               <div className="relative flex-1">
@@ -160,7 +286,6 @@ export default function PartMaster() {
             </div>
           </motion.div>
 
-          {/* Parts Table */}
           <motion.div variants={item} className="mes-card">
             <h2 className="text-lg font-semibold mb-4 text-foreground">Inventory ({filteredParts.length} parts)</h2>
             <div className="overflow-x-auto">
@@ -207,6 +332,7 @@ export default function PartMaster() {
         </>
       )}
 
+      {/* BOM Navigator Tab */}
       {activeTab === 'bom' && (
         <motion.div variants={item} className="grid lg:grid-cols-2 gap-6">
           <div className="mes-card">
@@ -243,7 +369,6 @@ export default function PartMaster() {
             </div>
           </div>
 
-          {/* Drawing & ATP Preview */}
           <div className="space-y-4">
             <div className="mes-card">
               <div className="flex items-center gap-2 mb-4">
@@ -274,9 +399,9 @@ export default function PartMaster() {
         </motion.div>
       )}
 
+      {/* BOM Comparison Tab */}
       {activeTab === 'compare' && (
         <motion.div variants={item} className="space-y-6">
-          {/* BOM Selection */}
           <div className="mes-card">
             <h2 className="text-lg font-semibold mb-4 text-foreground">Select BOMs to Compare</h2>
             <div className="grid md:grid-cols-2 gap-6">
@@ -313,14 +438,12 @@ export default function PartMaster() {
             </div>
           </div>
 
-          {/* Comparison Results */}
           {compareBom1 && compareBom2 && (
             <>
               {(() => {
                 const comparison = getBomComparison();
                 return (
                   <>
-                    {/* Summary Cards */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div className="mes-card bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900">
                         <div className="flex items-center gap-3">
@@ -368,7 +491,6 @@ export default function PartMaster() {
                       </div>
                     </div>
 
-                    {/* Detailed Comparison */}
                     <div className="mes-card">
                       <h2 className="text-lg font-semibold mb-4 text-foreground">Comparison Details</h2>
                       <div className="space-y-4">
@@ -459,6 +581,250 @@ export default function PartMaster() {
               </div>
             </div>
           )}
+        </motion.div>
+      )}
+
+      {/* BOM Obsolescence Tab */}
+      {activeTab === 'obsolescence' && (
+        <motion.div variants={item} className="space-y-6">
+          {/* Summary Cards */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="mes-card bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/50">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-400">{obsStats.active}</p>
+                  <p className="text-sm text-emerald-600 dark:text-emerald-500">Active</p>
+                </div>
+              </div>
+            </div>
+            <div className="mes-card bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-amber-100 dark:bg-amber-900/50">
+                  <Clock className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-amber-700 dark:text-amber-400">{obsStats.nrnd}</p>
+                  <p className="text-sm text-amber-600 dark:text-amber-500">NRND</p>
+                </div>
+              </div>
+            </div>
+            <div className="mes-card bg-orange-50 dark:bg-orange-950/30 border-orange-200 dark:border-orange-900">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-orange-100 dark:bg-orange-900/50">
+                  <AlertTriangle className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-orange-700 dark:text-orange-400">{obsStats.lastBuy}</p>
+                  <p className="text-sm text-orange-600 dark:text-orange-500">Last Buy</p>
+                </div>
+              </div>
+            </div>
+            <div className="mes-card bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-900">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-red-100 dark:bg-red-900/50">
+                  <XCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-red-700 dark:text-red-400">{obsStats.obsolete}</p>
+                  <p className="text-sm text-red-600 dark:text-red-500">Obsolete</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* BOM Filter */}
+          <div className="mes-card">
+            <h2 className="text-lg font-semibold mb-4 text-foreground">Filter by BOM</h2>
+            <div className="max-w-md">
+              <Select value={selectedObsBom} onValueChange={setSelectedObsBom}>
+                <SelectTrigger>
+                  <SelectValue placeholder="All BOMs" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All BOMs</SelectItem>
+                  {bomHierarchy.map((bom) => (
+                    <SelectItem key={bom.bomNo} value={bom.bomNo}>
+                      {bom.bomNo} - {bom.description}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Obsolescence Table */}
+          <div className="mes-card">
+            <h2 className="text-lg font-semibold mb-4 text-foreground">Obsolescence Details</h2>
+            <div className="overflow-x-auto">
+              <table className="mes-table">
+                <thead>
+                  <tr>
+                    <th>Part Number</th>
+                    <th>Description</th>
+                    <th>Manufacturer</th>
+                    <th>Status</th>
+                    <th>Alternate Part</th>
+                    <th>Last Buy Date</th>
+                    <th>Affected BOMs</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredObsolescence.map((part) => (
+                    <tr key={part.partNo}>
+                      <td className="font-mono font-medium">{part.partNo}</td>
+                      <td className="max-w-xs truncate">{part.description}</td>
+                      <td className="text-muted-foreground">{part.manufacturer}</td>
+                      <td>
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getObsolescenceStatusColor(part.status)}`}>
+                          {part.status}
+                        </span>
+                      </td>
+                      <td className="font-mono text-sm">{part.alternatePartNo}</td>
+                      <td className="text-muted-foreground">{part.lastBuyDate}</td>
+                      <td>
+                        <div className="flex gap-1 flex-wrap">
+                          {part.affectedBOMs.map(bom => (
+                            <span key={bom} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-mono bg-muted text-muted-foreground">
+                              {bom}
+                            </span>
+                          ))}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Lifecycle Analysis Tab */}
+      {activeTab === 'lifecycle' && (
+        <motion.div variants={item} className="space-y-6">
+          {/* Summary Cards */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="mes-card bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/50">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-400">{lifecycleStats.low}</p>
+                  <p className="text-sm text-emerald-600 dark:text-emerald-500">Low Risk</p>
+                </div>
+              </div>
+            </div>
+            <div className="mes-card bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-amber-100 dark:bg-amber-900/50">
+                  <Clock className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-amber-700 dark:text-amber-400">{lifecycleStats.medium}</p>
+                  <p className="text-sm text-amber-600 dark:text-amber-500">Medium Risk</p>
+                </div>
+              </div>
+            </div>
+            <div className="mes-card bg-orange-50 dark:bg-orange-950/30 border-orange-200 dark:border-orange-900">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-orange-100 dark:bg-orange-900/50">
+                  <AlertTriangle className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-orange-700 dark:text-orange-400">{lifecycleStats.high}</p>
+                  <p className="text-sm text-orange-600 dark:text-orange-500">High Risk</p>
+                </div>
+              </div>
+            </div>
+            <div className="mes-card bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-900">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-red-100 dark:bg-red-900/50">
+                  <XCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-red-700 dark:text-red-400">{lifecycleStats.critical}</p>
+                  <p className="text-sm text-red-600 dark:text-red-500">Critical Risk</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* BOM Filter */}
+          <div className="mes-card">
+            <h2 className="text-lg font-semibold mb-4 text-foreground">Filter by BOM</h2>
+            <div className="max-w-md">
+              <Select value={selectedLifecycleBom} onValueChange={setSelectedLifecycleBom}>
+                <SelectTrigger>
+                  <SelectValue placeholder="All Parts" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Parts</SelectItem>
+                  {bomHierarchy.map((bom) => (
+                    <SelectItem key={bom.bomNo} value={bom.bomNo}>
+                      {bom.bomNo} - {bom.description}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Lifecycle Table */}
+          <div className="mes-card">
+            <h2 className="text-lg font-semibold mb-4 text-foreground">Lifecycle Details</h2>
+            <div className="overflow-x-auto">
+              <table className="mes-table">
+                <thead>
+                  <tr>
+                    <th>Part Number</th>
+                    <th>Description</th>
+                    <th>Phase</th>
+                    <th>Introduced</th>
+                    <th>Est. EOL</th>
+                    <th>Remaining Life</th>
+                    <th>Risk Level</th>
+                    <th>Notes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredLifecycle.map((part) => (
+                    <tr key={part.partNo}>
+                      <td className="font-mono font-medium">{part.partNo}</td>
+                      <td className="max-w-xs truncate">{part.description}</td>
+                      <td>
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getLifecyclePhaseColor(part.phase)}`}>
+                          {part.phase}
+                        </span>
+                      </td>
+                      <td className="text-muted-foreground">{part.introduced}</td>
+                      <td className="text-muted-foreground">{part.estimatedEOL}</td>
+                      <td>
+                        <div className="flex items-center gap-2 min-w-[120px]">
+                          <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                            <div
+                              className={`h-full rounded-full ${getRemainingLifeColor(part.remainingLife)}`}
+                              style={{ width: `${part.remainingLife}%` }}
+                            />
+                          </div>
+                          <span className="text-xs font-medium text-muted-foreground w-8">{part.remainingLife}%</span>
+                        </div>
+                      </td>
+                      <td>
+                        <span className={`text-sm font-medium ${getRiskColor(part.riskLevel)}`}>
+                          {part.riskLevel}
+                        </span>
+                      </td>
+                      <td className="text-sm text-muted-foreground max-w-[200px] truncate">{part.notes}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </motion.div>
       )}
     </motion.div>
