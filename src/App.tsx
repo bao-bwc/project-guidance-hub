@@ -47,6 +47,7 @@ const App = () => (
               <Route path="/troubleshooting" element={<Troubleshooting />} />
               <Route path="/quality-control" element={<QualityControl />} />
               <Route path="/shipping" element={<Shipping />} />
+              <Route path="/part-lifecycle" element={<PartLifecycle />} />
               <Route path="/as9100-compliance" element={<AS9100Compliance />} />
               <Route path="/administration" element={<Administration />} />
               <Route path="/about" element={<About />} />

@@ -253,6 +253,14 @@ export default function PartMaster() {
           BOM Comparison
         </Button>
         <Button
+          variant="outline"
+          onClick={() => navigate('/part-lifecycle')}
+          className="gap-2"
+        >
+          <Recycle className="w-4 h-4" />
+          Part Lifecycle
+        </Button>
+        <Button
           variant={activeTab === 'obsolescence' ? 'default' : 'outline'}
           onClick={() => setActiveTab('obsolescence')}
           className="gap-2"
