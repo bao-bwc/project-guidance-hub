@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Search, Package, ChevronRight, FileText, ClipboardCheck, FolderTree, GitCompare, Plus, Minus, Equal, AlertTriangle, Activity, Clock, XCircle, CheckCircle2, TrendingDown } from 'lucide-react';
+import { Search, Package, ChevronRight, FileText, ClipboardCheck, FolderTree, GitCompare, Plus, Minus, Equal, AlertTriangle, Activity, Clock, XCircle, CheckCircle2, TrendingDown, Recycle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { mockParts } from '@/data/mockData';
