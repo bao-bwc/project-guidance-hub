@@ -110,6 +110,7 @@ const item = {
 };
 
 export default function PartMaster() {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPart, setSelectedPart] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'parts' | 'bom' | 'compare' | 'obsolescence' | 'lifecycle'>('parts');
