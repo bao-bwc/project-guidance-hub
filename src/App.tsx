@@ -18,6 +18,7 @@ import Shipping from "./pages/Shipping";
 import Administration from "./pages/Administration";
 import Stockroom from "./pages/Stockroom";
 import AS9100Compliance from "./pages/AS9100Compliance";
+import PartLifecycle from "./pages/PartLifecycle";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 
