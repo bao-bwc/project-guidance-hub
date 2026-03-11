@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Search, Package, ChevronRight, FileText, ClipboardCheck, FolderTree, GitCompare, Plus, Minus, Equal, AlertTriangle, Activity, Clock, XCircle, CheckCircle2, TrendingDown } from 'lucide-react';
+import { Search, Package, ChevronRight, FileText, ClipboardCheck, FolderTree, GitCompare, Plus, Minus, Equal, AlertTriangle, Activity, Clock, XCircle, CheckCircle2, TrendingDown, Recycle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { mockParts } from '@/data/mockData';
@@ -109,6 +110,7 @@ const item = {
 };
 
 export default function PartMaster() {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPart, setSelectedPart] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'parts' | 'bom' | 'compare' | 'obsolescence' | 'lifecycle'>('parts');
@@ -249,6 +251,14 @@ export default function PartMaster() {
         >
           <GitCompare className="w-4 h-4" />
           BOM Comparison
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => navigate('/part-lifecycle')}
+          className="gap-2"
+        >
+          <Recycle className="w-4 h-4" />
+          Part Lifecycle
         </Button>
         <Button
           variant={activeTab === 'obsolescence' ? 'default' : 'outline'}

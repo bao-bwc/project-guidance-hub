@@ -18,6 +18,7 @@ import Shipping from "./pages/Shipping";
 import Administration from "./pages/Administration";
 import Stockroom from "./pages/Stockroom";
 import AS9100Compliance from "./pages/AS9100Compliance";
+import PartLifecycle from "./pages/PartLifecycle";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 
@@ -46,6 +47,7 @@ const App = () => (
               <Route path="/troubleshooting" element={<Troubleshooting />} />
               <Route path="/quality-control" element={<QualityControl />} />
               <Route path="/shipping" element={<Shipping />} />
+              <Route path="/part-lifecycle" element={<PartLifecycle />} />
               <Route path="/as9100-compliance" element={<AS9100Compliance />} />
               <Route path="/administration" element={<Administration />} />
               <Route path="/about" element={<About />} />
